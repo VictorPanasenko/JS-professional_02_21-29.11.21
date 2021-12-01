@@ -1,0 +1,128 @@
+ // Proxy
+
+function GeoCoder() {
+    this.getLatLng = function (address) {
+        if(address === 'Amsterdam') {
+            return 1;
+        }
+        
+        if(address === 'Kyiv') {
+            return 2;
+        }
+        
+        if(address === 'Paris') {
+            return 3;
+        }
+        
+        return 4;
+    }
+}
+
+function GeoProxy() {
+    var geoCoder = new GeoCoder();
+    var geoCache = {};
+    
+    return {
+        getLatLng: function (address) {
+            if(!geoCache[address]) {
+                geoCache[address] = geoCoder.getLatLng(address);
+            }
+            
+            return geoCache[address];
+        },
+        
+        getCount: function () {
+            var count = 0;
+            for(var code in geoCache) {
+                count += 1;
+            }
+            return count;
+        }
+    }
+}
+
+var geoProxy = new GeoProxy();
+geoProxy.getLatLng('Paris');
+geoProxy.getLatLng('Paris');
+geoProxy.getLatLng('Paris');
+
+geoProxy.getLatLng('Kyiv');
+geoProxy.getLatLng('Amsterdam');
+geoProxy.getLatLng('Amsterdam');
+
+// Facade
+
+function Mortgage(name) {
+    this.name = name;
+}
+
+Mortgage.prototype = {
+    applyFor: function (amount) {
+        var result = 'approved!';
+        if(!new Bank().verify(this.name, amount)) {
+            result = 'denied';
+        } else if(!new Credit().get(this.name)) {
+            result = 'denied';
+        } else if(!new Background().check(this.name)) {
+            result = 'denied';
+        }
+        
+        return this.name + ' ' + result;
+    }
+}
+
+function Bank() {
+    this.verify = function (name, amount) {
+        // ...
+    }
+}
+
+function Credit() {
+    this.get = function (name) {
+        // ...
+    }
+}
+
+function Background() {
+    this.check = function (name) {
+        // ...
+    }
+}
+
+var mortgage = new Mortgage('Bob');
+mortgage.applyFor('$2000');
+
+ // Decorator
+
+function User(name) {
+    this.name = name;
+    this.say = function () {
+        return 'User: ' + this.name;
+    }
+}
+
+function DecoratedUser(user, street, city) {
+    this.user = user;
+    this.street = street;
+    this.city = city;
+    this.say = function () {
+        return 'Decorated User: ' + this.name;
+    }
+}
+
+var user = new User('Bob');
+var decoratedUser = new DecoratedUser(user, 'Broadway', 'New York');
+decoratedUser.say();
+
+ // Singleton
+function Universal() {
+    var instance = this;
+    
+    this.bang = 'Big';
+    
+    Universal = function () {
+        return instance;
+    }
+}
+
+console.log(new Universal() === new Universal());
