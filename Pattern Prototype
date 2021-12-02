@@ -1,0 +1,38 @@
+Прототип просто создает копии существующих функциональных объектов, а не определяет совершенно новые объекты.
+Самым большим преимуществом использования шаблона в JavaScript является повышение производительности по сравнению с объектно-ориентированными классами. Это означает, что когда вы определяете функции внутри объекта, они будут создаваться по ссылке. Другими словами, все дочерние объекты будут указывать на один и тот же метод вместо создания своих собственных копий.
+
+const Warrior = function(name) {
+  this.name = name
+  this.hp = 100
+}
+
+Warrior.prototype.bash = function(target) {
+  target.hp -= 15
+}
+
+Warrior.prototype.omniSlash = function(target) {
+  // The target's hp may not be under 50 or this attack will fail on the opponent
+  if (target.hp < 50) {
+    return
+  }
+  target.hp -= 50
+}
+
+const sam = new Warrior('Sam')
+const lenardo = new Warrior('Lenardo')
+
+sam.bash(lenardo);
+console.log(sam);
+console.log(lenardo);
+
+//Warrior {
+    name: "Sam" ,
+    hp: 100
+   }
+  Warrior {
+   name: "Lenardo" ,
+   hp: 85
+  } 
+
+В нашем примере кода мы определяем методы атаки воина с помощью Warrior.prototype. <method> = function () {...}. Мы создали несколько экземпляров воинов, так что теперь мы рассматриваем два экземпляра. Оба экземпляра устанавливают свое свойство name в соответствии с аргументом name, переданным вызывающей стороной.
+Когда мы определили методы bash и omniSlash в прототипе, два отдельных экземпляра, которые мы рассматриваем, на самом деле ссылаются на одни и те же функции bash и omniSlash.
