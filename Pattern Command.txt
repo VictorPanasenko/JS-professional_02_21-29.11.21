@@ -1,0 +1,30 @@
+// Command Pattern //
+//Инкапсулирует вызов метода в один объект.
+Общая идея, лежащая в основе шаблона Command, заключается в том, что он предоставляет нам средство для разделения ответственности за выдачу команд от всего, что выполняет команды, вместо этого делегируя эту ответственность различным объектам.
+
+С точки зрения реализации, простые командные объекты связывают вместе действие и объект, желающий вызвать действие. Они постоянно включают в себя операцию выполнения (такую ​​как run () или execute ()). Все объекты Command с одним и тем же интерфейсом можно легко поменять местами при необходимости, и это считается одним из самых больших преимуществ шаблона.
+
+
+(function(){
+  var carManager = {    // Запросить информацию
+    requestInfo: function( model, id ){
+      return "The information for " + model + " with ID " + id + " is foobar";
+    },
+    // Купить машину
+    buyVehicle: function( model, id ){
+      return "You have successfully purchased Item " + id + ", a " + model;
+    },   
+   // Организовать просмотр
+    arrangeViewing: function( model, id ){
+      return "You have successfully booked a viewing of " + model + " ( " + id + " ) ";
+    }
+  };
+})();
+
+carManager.execute = function ( name ) {
+  return carManager[name] && carManager[name].apply( carManager, [].slice.call(arguments, 1) );
+};
+carManager.execute( "arrangeViewing", "Ferrari", "14523" );
+carManager.execute( "requestInfo", "Ford Mondeo", "54323" );
+carManager.execute( "requestInfo", "Ford Escort", "34232" );
+carManager.execute( "buyVehicle", "Ford Escort", "34232" );
