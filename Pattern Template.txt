@@ -1,0 +1,83 @@
+//Pattern ШАБЛОННЫЙ(Template) МЕТОД
+
+//Задает «скелет» алгоритма в методе, оставляя определение реализации некоторых шагов субклассам.
+ Субклассы могут переопределять некоторые части алгоритма без изменения его структуры.
+ Методы внутри шаблонного метода могут быть пустыми, выдавать ошибку если не описаны в субклассе или иметь реализацию по умолчанию.
+ Применение:
+ 1. Когда подклассы должны расширять базовый алгоритм, не меняя его структуры.
+ 2. Когда у вас есть несколько классов, делающих одно и то же с незначительными отличиями. Если вы редактируете один класс, то приходится вносить такие же правки и в остальные классы - шаблонный метод это исправляет.
+
+
+class Employee {
+    constructor(name, salary) {
+        this._name = name;
+        this._salary = salary;
+    }
+
+    templateMethod() { // шаблонный метод, который выполняет сам алгоритм
+        this.hiring();
+        this.work();
+        this.getPaid();
+        if (this.needSack()) { // метод перехватчик, срабатывает если Клиент подтвердит true. (см. класс Tester)
+            this.sacking();
+        }
+    }
+
+    hiring() { // этот метод описан в шаблонном методе т.к. он одинаковый для всех субклассов
+        console.log(`Hiring ${this._name}`);
+    }
+
+    work() { // этот метод описан в шаблонном методе НО берет уникальные значения из responsibilities() субкласса
+        console.log(`${this._name} handles ${this.responsibilities() /* gap to be filled by subclass */}`);
+    }
+
+    getPaid() { // это абстрактный метод, описывается у субклассов
+        throw new  Error(`Не описан метод getPaid() в классе ${this.constructor.name}`)
+    }
+    needSack() { // по умолчанию сотрудников не увольняем
+        return false;
+    }
+    sacking() { // этот метод описан в шаблонном методе т.к. он одинаковый для всех субклассов
+        console.log(`Sacking ${this._name}`);
+    }
+}
+
+class Developer extends Employee {
+    constructor(name, salary) {
+        super(name, salary);
+    }
+    getPaid() {
+        console.log(`${this._name} got paid ${this._salary}. It's more then Tester.`);
+    }
+    needSack() { // метод перехватчик переназначен. Всех Developeroв всегда увольнять.
+        return true;
+    }
+    // details handled by subclass
+    responsibilities() {
+        return 'application development';
+    }
+}
+
+class Tester extends Employee {
+    constructor(name, salary) {
+        super(name, salary);
+    }
+    needSack() { // метод переназначен. Спрашиваем Клиента нужно ли увольнять конкретного клиента. 
+        let suckQuestion = confirm(`Уволить сотрудника ${this._name}?`);
+        return suckQuestion;
+    }
+    getPaid() {
+        console.log(`${this._name} got paid ${this._salary}. It's less then Developer.`);
+    }
+    // details handled by subclass
+    responsibilities() {
+        return 'testing';
+    }
+}
+
+//
+const dev = new Developer('Nathan', 100000);
+dev.templateMethod();
+
+const tester = new Tester('Brian', 90000);
+tester.templateMethod();
